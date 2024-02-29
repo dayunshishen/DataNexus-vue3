@@ -6,7 +6,6 @@
 
 <script>
   import { reactive, provide, onMounted, watch } from 'vue';
-  import { setMainBusInstance, registerPlugin } from './mainBusPluginSystem.js';
   export default {
     name: 'DataNexus',
     setup() {
@@ -14,6 +13,15 @@
       const updateCallbacks = reactive({});// 存储子组件的更新回调函数
       const sharedBindings = reactive({});// 用于存储数据项到共享数据源的绑定关系
       const plugins = reactive({});// 定义 plugins 对象
+
+      // Define mainBusInstance
+      let mainBusInstance = {
+        sharedData,
+        updateCallbacks,
+        sharedBindings,
+        plugins
+        // Other properties or methods needed from mainBusPluginSystem.js
+      };
       /**
        * 注册一个回调函数以响应指定数据的变化。
        * @param {String} componentName - 调用组件的名称。
@@ -139,6 +147,20 @@
         }
         return undefined;
       };
+      /**
+       * 注册插件。
+       * @param {string} pluginName - 插件名称。
+       * @param {object} plugin - 插件对象，必须包含一个名为 'install' 的方法。
+       */
+      const registerPlugin = (pluginName, plugin) => {
+        if (!plugin.install || typeof plugin.install !== 'function') {
+          console.error(`Plugin "${pluginName}" must include an 'install' method.`);
+          return;
+        }
+
+        plugin.install(mainBusInstance, pluginName);
+        console.log(`插件 ${pluginName} 安装成功.`);
+      };
 
       provide('dataNexus', {
         sharedData,
@@ -152,7 +174,7 @@
       });
 
       onMounted(() => {
-        setMainBusInstance({
+        mainBusInstance ={
           sharedData,
           subscribeToDataChange,
           updateSharedData,
@@ -161,7 +183,7 @@
           removeSharedDataKey,
           getSharedData,
           registerPlugin
-        });
+        };
       });
 
       return {
