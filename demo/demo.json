@@ -1,0 +1,20 @@
+{
+  "components": {
+    "demo1": {
+      "bindings": [
+        {
+          "key": "user",
+          "target": "tableData"
+        }
+      ]
+    },
+    "demo2": {
+      "bindings": [
+        {
+          "key": "tableData",
+          "target": "tableData"
+        }
+      ]
+    }
+  }
+}
