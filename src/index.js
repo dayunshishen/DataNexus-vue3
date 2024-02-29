@@ -1,4 +1,5 @@
 // datanexus-vue3/src/index.js
 import DataNexus from './DataNexus.vue';
+import { registerPlugin } from './mainBusPluginSystem';
 
-export default DataNexus;
+export { DataNexus, registerPlugin };
