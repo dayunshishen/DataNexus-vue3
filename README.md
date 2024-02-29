@@ -217,67 +217,61 @@ export default {
 ```
 
 
-DataNexus 插件系统
-DataNexus 组件通过 mainBusPluginSystem.js 提供了一个插件注册系统，允许开发者扩展 DataNexus 的功能。下面是如何使用这个系统的详细指南。
+registerPlugin 方法
+registerPlugin 是 DataNexus 组件的一个方法，用于注册自定义插件。这个方法允许您将额外的功能或逻辑动态地添加到 DataNexus 的实例中。
 
-功能说明
-setMainBusInstance: 将 DataNexus 实例设置为主总线实例，以便插件可以与之交互。
-registerPlugin: 注册一个新插件。插件需要包含一个 install 方法，该方法在插件注册时被调用。
+如何使用
+要使用 registerPlugin 方法，您的插件对象需要包含一个 install 方法。此方法将在注册插件时被调用，并接收 DataNexus 实例作为参数。
 
-使用步骤
+以下是使用 registerPlugin 方法的基本步骤：
 
-
-了解了，您想要的是关于如何在 DataNexus 组件中使用 registerPlugin 函数注册和使用插件的文档说明。我将根据这个需求重新编写文档部分。
-
-DataNexus 插件系统
-DataNexus 组件通过 mainBusPluginSystem.js 提供了一个插件注册系统，允许开发者扩展 DataNexus 的功能。下面是如何使用这个系统的详细指南。
-
-功能说明
-setMainBusInstance: 将 DataNexus 实例设置为主总线实例，以便插件可以与之交互。
-registerPlugin: 注册一个新插件。插件需要包含一个 install 方法，该方法在插件注册时被调用。
-使用步骤
-步骤 1: 创建插件
-创建一个符合要求的插件。该插件需要有一个 install 方法，该方法接收 DataNexus 实例和插件名称。
+创建一个包含 install 方法的插件对象。
+在 DataNexus 实例上调用 registerPlugin 方法，传递插件名称和插件对象。
+示例
+假设我们有一个名为 ExamplePlugin 的简单插件，它包含一个基本的安装方法。
 
 ```javascript
-// myPlugin.js
+// ExamplePlugin.js
 export default {
-install(dataNexus, pluginName) {
-// 在这里添加插件的逻辑
-dataNexus.someMethod = () => {
-console.log(`插件 ${pluginName} 的方法被调用`);
-};
-}
+  install(dataNexusInstance) {
+    // 在这里添加你的插件逻辑
+    dataNexusInstance.exampleMethod = function() {
+      console.log("ExamplePlugin 的方法被调用");
+    };
+  }
 };
 ```
-步骤 2: 注册插件
-在应用初始化或适当的地方，使用 registerPlugin 方法注册您的插件。
- ```javascript
-// main.js 或其他初始化脚本
-import { registerPlugin } from './mainBusPluginSystem';
-import myPlugin from './myPlugin';
+要在 DataNexus 组件中注册这个插件，请按照以下步骤操作：
 
-// 假设 dataNexusInstance 已经是一个存在的 DataNexus 实例
-registerPlugin('myPlugin', myPlugin);
-```
-步骤 3: 在组件中使用插件
-一旦插件被注册，您就可以在 DataNexus 的任何子组件中使用插件提供的方法或属性。
-
- ```javascript
+```javascript
+// 在你的 Vue 组件中
 <template>
-  <!-- 组件模板 -->
+  <DataNexus ref="dataNexus">
+    <!-- Your other components -->
+  </DataNexus>
 </template>
 
-<script setup>
-import { inject, onMounted } from 'vue';
+<script>
+import { ref, onMounted } from 'vue';
+import DataNexus from './DataNexus';
+import ExamplePlugin from './ExamplePlugin';
 
-const dataNexus = inject('dataNexus');
+export default {
+  components: {
+    DataNexus
+  },
+  setup() {
+    const dataNexusRef = ref(null);
 
-onMounted(() => {
-  if (dataNexus && dataNexus.someMethod) {
-    dataNexus.someMethod();
+    onMounted(() => {
+      if (dataNexusRef.value) {
+        dataNexusRef.value.registerPlugin('ExamplePlugin', ExamplePlugin);
+      }
+    });
+
+    return { dataNexusRef };
   }
-});
-</script>
+};
 ```
+在这个例子中，ExamplePlugin 将被安装到 DataNexus 实例中，您可以在任何可以访问到 DataNexus 实例的地方使用 exampleMethod 方法。
 
