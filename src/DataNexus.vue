@@ -43,9 +43,17 @@
           return;
         }
         updateCallbacks[uniqueKey] = callback;
-        watch(() => sharedData[sharedBindings[uniqueKey] || key], callback, { immediate: false, deep: true });
-        if (Object.prototype.hasOwnProperty.call(sharedData, key)) {
-          callback(sharedData[key]);
+        // 如果 sharedBindings 配置了 uniqueKey，设置观察者。
+        if (sharedBindings[uniqueKey]) {
+          // 设置一个观察者，用来观察特定绑定的变化。
+          watch(() => sharedData[sharedBindings[uniqueKey]], callback, { immediate: false, deep: true });
+
+          // 如果 sharedData 中已经有了当前值，立即使用当前值触发回调。
+          if (Object.prototype.hasOwnProperty.call(sharedData, sharedBindings[uniqueKey])) {
+            callback(sharedData[sharedBindings[uniqueKey]]);
+          }
+        } else {
+          console.error(`未找到键 '${uniqueKey}' 的共享绑定`);
         }
       };
       /**
