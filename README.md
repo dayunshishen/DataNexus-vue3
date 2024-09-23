@@ -21,6 +21,9 @@ DataNexus 是一个 Vue 3 组件，旨在提供中央状态管理和事件广播
 引入并注册组件
 在您的 Vue 3 应用中引入并注册 DataNexus 组件。
 
+您也可以进行npm下载
+npm i datanexus-vue3
+
  ```javascript
 import { createApp } from 'vue';
 import App from './App.vue';
